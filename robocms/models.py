@@ -1,10 +1,15 @@
 from django.db import models
+from django.conf import settings
 
 
 class Robot(models.Model):
     """
     ロボット情報
     """
+    # robot auth association model
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             related_name='robots',
+                             on_delete=models.CASCADE)
     robot_name = models.CharField(max_length=100)
     robot_category = models.CharField(max_length=100)
 
@@ -39,4 +44,5 @@ class Value(models.Model):
    主に座標値など
     """
     motion = models.ForeignKey(Motion, related_name="values", on_delete=models.CASCADE)
+    value_num = models.IntegerField(blank=True)
     data = models.TextField(blank=True)

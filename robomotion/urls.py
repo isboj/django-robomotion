@@ -21,5 +21,7 @@ from api_v0.urls import router as api_v0_router
 urlpatterns = [
     path('robocms/', include('robocms.urls')),
     path('api_v0/', include(api_v0_router.urls)),
+    # ログイン関連ビュー
+    path('accounts/', include(('accounts.urls', 'accounts'), )),
     path('admin/', admin.site.urls),
 ]
