@@ -10,6 +10,32 @@ Python 3.6.4 |Anaconda, Inc.|
 - Django version
 2.0.5
 
+## Usage
+
+### ONLY development environment
+`__init__.py`は削除しない
+```text
+find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+find . -path "*/migrations/*.pyc"  -delete
+```
+データベースの削除
+```text
+rm db.sqlite3
+```
+マイグレーション
+```text
+python manage.py makemigrations
+python manage.py migrate
+```
+スーパユーザ作成
+```text
+python manage.py createsuperuser
+```
+サーバ起動
+```text
+python manage.py runserver
+```
+
 ## システム説明
 
 ### ROBOCMS
