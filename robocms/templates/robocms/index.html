@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block title %}Index{% endblock %}
+
+{% block main %}
+
+<div class="page-header header-filter" data-parallax="true" style="background-color: #b8ecf3">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-10">
+            {% if robot_list %}
+                <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>名前</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for robot in robot_list %}
+                <tr>
+                    <th>{{ robot.id }}</th>
+                    <td>{{ robot.robot_name }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+                </table>
+            {% else %}
+                <h2>登録されているロボットはありません</h2>
+
+            {% endif %}
+        </div>
+      </div>
+    </div>
+</div>
+
+{% endblock %}
