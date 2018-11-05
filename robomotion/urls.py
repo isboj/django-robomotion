@@ -25,5 +25,8 @@ urlpatterns = [
     path('api_v0/', include(api_v0_router.urls)),
     # ログイン関連ビュー
     path('accounts/', include(('accounts.urls', 'accounts'), )),
+    # auth api by jwt
+    path('auth_api/', include('auth_api.urls')),
     path('admin/', admin.site.urls),
+
 ]
