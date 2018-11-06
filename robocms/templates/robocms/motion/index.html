@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block title %}Index{% endblock %}
+
+{% block main %}
+
+<div class="page-header header-filter" data-parallax="true" style="background-color: #b8ecf3">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-10">
+            {% if motion_list %}
+                <h2>{{ robot.robot_name }}</h2>
+                <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>モーション名</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for motion in motion_list %}
+                <tr>
+                    <th>{{ motion.id }}</th>
+                    <td>{{ motion.motion_name }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+                </table>
+            {% else %}
+                <h2>登録されているモーションはありません</h2>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+</div>
+
+{% endblock %}

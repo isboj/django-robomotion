@@ -20,7 +20,9 @@
                 {% for robot in robot_list %}
                 <tr>
                     <th>{{ robot.id }}</th>
-                    <td>{{ robot.robot_name }}</td>
+                    <td>
+                    <a href="{% url 'robocms:motion_index' robot_id=robot.pk %}">{{ robot.robot_name }}</a>
+                    </td>
                 </tr>
                 {% endfor %}
                 </tbody>

@@ -19,7 +19,7 @@
   <nav class="navbar navbar-transparent navbar-color-on-scroll fixed-top navbar-expand-lg" color-on-scroll="100" id="sectionsNav">
     <div class="container">
       <div class="navbar-translate">
-        <a class="navbar-brand" href="{% url 'robocms:index' %}"> RoboMotion Web</a>
+        <a class="navbar-brand" href="{% url 'robocms:home' %}"> RoboMotion Web</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" aria-expanded="false" aria-label="Toggle navigation">
           <span class="sr-only">Toggle navigation</span>
           <span class="navbar-toggler-icon"></span>
@@ -29,19 +29,7 @@
       </div>
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav ml-auto">
-          <li class="dropdown nav-item">
-            <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
-              <i class="material-icons">apps</i> Components
-            </a>
-            <div class="dropdown-menu dropdown-with-icons">
-              <a href="../index.html" class="dropdown-item">
-                <i class="material-icons">layers</i> All Components
-              </a>
-              <a href="https://demos.creative-tim.com/material-kit/docs/2.0/getting-started/introduction.html" class="dropdown-item">
-                <i class="material-icons">content_paste</i> Documentation
-              </a>
-            </div>
-          </li>
+
           <li class="dropdown nav-item">
               {% if user.is_authenticated %}
                   <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
@@ -69,6 +57,24 @@
                   </div>
               {% endif %}
           </li>
+          {% if user.is_authenticated %}
+          <li class="dropdown nav-item">
+            <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+              <i class="material-icons">accessibility</i> RoboMotion
+            </a>
+            <div class="dropdown-menu dropdown-with-icons">
+              <a href="{% url 'robocms:robot_index' %}" class="dropdown-item">
+                <i class="material-icons">assessment</i> Robot一覧
+              </a>
+              <a href="{% url 'robocms:robot_add' %}" class="dropdown-item">
+                <i class="material-icons">fiber_new</i> Robot追加
+              </a>
+              <a href="{% url 'robocms:motion_add' %}" class="dropdown-item">
+                <i class="material-icons">fiber_new</i> Motion追加
+              </a>
+            </div>
+          </li>
+           {% endif %}
           <li class="nav-item">
             <a class="nav-link" href="javascript:void(0)" onclick="scrollToDownload()">
               <i class="material-icons">cloud_download</i> Download

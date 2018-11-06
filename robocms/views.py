@@ -4,19 +4,19 @@ from django.views import generic
 from django.contrib.auth.decorators import login_required
 
 
-from .models import Robot
-from .forms import RobotForm
+from .models import Robot, Motion
+from .forms import RobotForm, MotionFrom
 
-
+# === ロボットに関するView ===
 def home(request):
     return render(request, 'robocms/home.html')
 
 
-class IndexView(generic.ListView):
+class RobotIndexView(generic.ListView):
     """
     ロボットの一覧表示
     """
-    template_name = 'robocms/index.html'
+    template_name = 'robocms/robot/index.html'
     context_object_name = 'robot_list'
 
     def get_queryset(self):
@@ -48,10 +48,52 @@ def robot_edit(request, pk=None):
             robot = form.save(commit=False)
             robot.user = request.user
             robot.save()
-            return redirect('robocms:home')
+            return redirect('robocms:robot_index')
 
     else:
         # Getの時
         form = RobotForm(instance=robot)
 
     return render(request, 'robocms/edit.html', dict(form=form, robot_id=pk))
+
+# ===モーションに関するView===
+
+def motion_index_in_robot(request, robot_id):
+    """
+    ロボットに属するモーションの一覧表示
+    :param request:
+    :param robot_id:
+    :return:
+    """
+    robot = Robot.objects.get(id=robot_id)
+    motion_list = robot.motions.all()
+    context = {
+        'robot': robot,
+        'motion_list': motion_list
+    }
+    return render(request, 'robocms/motion/index.html', context)
+
+
+def motion_edit(request, pk=None):
+    if pk:
+        # motion_idが指定されている
+        motion = get_object_or_404(Motion, pk=pk)
+    else:
+        # motion_idがないとき
+        motion = Motion()
+
+    if request.method == "POST":
+        form = MotionFrom(request.POST, instance=motion)
+
+        if form.is_valid():
+            motion = form.save(commit=False)
+            motion.save()
+            return redirect('robocms:robot_index')
+
+    else:
+        # Getの時
+        form = MotionFrom(instance=motion)
+
+    return render(request, 'robocms/edit.html', dict(form=form, motion_id=pk))
+
+# ===valueに関するView===
