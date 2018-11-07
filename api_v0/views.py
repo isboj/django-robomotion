@@ -28,7 +28,7 @@ class RobotViewSet(viewsets.ModelViewSet):
         if "robot_name" in request.query_params:
             robot_name = request.query_params["robot_name"]
         else:
-            response["message"] = "query_params is not valid"
+            response["message"] = "query_params is invalid"
             response["status"] = False
             return Response(response)
 
@@ -42,6 +42,7 @@ class RobotViewSet(viewsets.ModelViewSet):
         else:  # tryで例外が発生しなったとき
             response["robot_name"] = robot_name
             response["robot_id"] = robot.id
+            response["message"] = "Request is Good!"
             response["status"] = True
 
         return Response(response)
@@ -61,17 +62,23 @@ class RobotViewSet(viewsets.ModelViewSet):
         if "motion_name" in request.query_params:
             motion_name = request.query_params["motion_name"]
         else:
-            response["message"] = "query_params is not valid"
+            response["message"] = "query_params is invalid"
             response["status"] = False
             return Response(response)
 
         user = self.request.user
+        # ロボットidはget_robot_idを行ったことにより、正確である前提
         robot = user.robots.all().get(id=pk)
-        # TODO: getでは同一名があれば、エラーとなる。登録時に一意にする必要あり。
-        motion = robot.motions.all().get(motion_name=motion_name)
-        response["motion_name"] = motion_name
-        response["motion_id"] = motion.id
-        response["status"] = True
+        try:
+            # TODO: getでは同一名があれば、エラーとなる。登録時に一意にする必要あり。
+            motion = robot.motions.all().get(motion_name=motion_name)
+        except exceptions.ObjectDoesNotExist:
+            response["message"] = "Motion name not exist."
+            response["status"] = False
+        else:
+            response["motion_name"] = motion_name
+            response["motion_id"] = motion.id
+            response["status"] = True
 
         return Response(response)
 
