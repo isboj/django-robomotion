@@ -44,5 +44,5 @@ class Value(models.Model):
    主に座標値など
     """
     motion = models.ForeignKey(Motion, related_name="values", on_delete=models.CASCADE)
-    value_num = models.IntegerField(blank=True)
+    value_num = models.IntegerField(null=True, blank=True)
     data = models.TextField(blank=True)
