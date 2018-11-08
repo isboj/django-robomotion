@@ -8,28 +8,26 @@
     <div class="container">
       <div class="row">
         <div class="col-md-10">
-            {% if motion_list %}
-                <h2>{{ robot.robot_name }}</h2>
+            {% if value_list %}
+                <h2>{{ motion.motion_name }}</h2>
                 <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>モーション名</th>
+                        <th>データ</th>
                     </tr>
                 </thead>
                 <tbody>
-                {% for motion in motion_list %}
+                {% for value in value_list %}
                 <tr>
-                    <th>{{ motion.id }}</th>
-                    <td>
-                    <a href="{% url 'robocms:value_index' motion_id=motion.id %}">{{ motion.motion_name }}</a>
-                    </td>
+                    <th>{{ value.id }}</th>
+                    <td>{{ value.data }}</td>
                 </tr>
                 {% endfor %}
                 </tbody>
                 </table>
             {% else %}
-                <h2>登録されているモーションはありません</h2>
+                <h2>登録されているフレームデータはありません</h2>
             {% endif %}
         </div>
       </div>

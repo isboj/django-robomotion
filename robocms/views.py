@@ -2,12 +2,16 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.views import generic
 from django.contrib.auth.decorators import login_required
-
+from django.views.generic.edit import CreateView
+from django.views.generic import UpdateView
+from django.contrib import messages
 
 from .models import Robot, Motion
 from .forms import RobotForm, MotionFrom
 
 # === ロボットに関するView ===
+
+
 def home(request):
     return render(request, 'robocms/home.html')
 
@@ -25,38 +29,45 @@ class RobotIndexView(generic.ListView):
         return robots
 
 
-def robot_edit(request, pk=None):
+class RobotCreateView(CreateView):
     """
-    ロボットの編集
-    :param request:
-    :param robot_id:
-    :return:
+    ロボット新規作成
     """
+    model = Robot
+    template_name = 'robocms/edit.html'
+    form_class = RobotForm
+    success_url = "/robocms/"
 
-    if pk:
-        # robot_idが指定されている(編集時)
-        robot = get_object_or_404(Robot, pk=pk)
-    else:
-        # robot_idがない(新規作成時)
-        robot = Robot()
+    # ログインしているユーザを設定
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super(RobotCreateView, self).form_valid(form)
 
-    if request.method == "POST":
-        # POSTされたとき
-        form = RobotForm(request.POST, instance=robot)
+    # kwargsで値渡し
+    def get_form_kwargs(self):
+        kwargs = super(RobotCreateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
-        if form.is_valid():
-            robot = form.save(commit=False)
-            robot.user = request.user
-            robot.save()
-            return redirect('robocms:robot_index')
 
-    else:
-        # Getの時
-        form = RobotForm(instance=robot)
+class RobotUpdateView(UpdateView):
+    """
+    ロボット更新
+    """
+    model = Robot
+    template_name = 'robocms/edit.html'
+    form_class = RobotForm
+    success_url = "/robocms/"
 
-    return render(request, 'robocms/edit.html', dict(form=form, robot_id=pk))
+    # kwargsで値渡し
+    def get_form_kwargs(self):
+        kwargs = super(RobotUpdateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
 
 # ===モーションに関するView===
+
 
 def motion_index_in_robot(request, robot_id):
     """
@@ -73,6 +84,21 @@ def motion_index_in_robot(request, robot_id):
     }
     return render(request, 'robocms/motion/index.html', context)
 
+
+class MotionCreateView(CreateView):
+    """
+    モーション新規作成
+    """
+    model = Motion
+    template_name = 'robocms/edit.html'
+    form_class = MotionFrom
+    success_url = "/robocms/"
+
+    # kwargsで値渡し
+    def get_form_kwargs(self):
+        kwargs = super(MotionCreateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
 def motion_edit(request, pk=None):
     if pk:
@@ -97,3 +123,20 @@ def motion_edit(request, pk=None):
     return render(request, 'robocms/edit.html', dict(form=form, motion_id=pk))
 
 # ===valueに関するView===
+
+
+def value_index_in_motion(request, motion_id):
+    """
+    モーションに属するValueの表示
+    :param request:
+    :param motion_id:
+    :return:
+    """
+    motion = Motion.objects.get(id=motion_id)
+    value_list = motion.values.all()
+    context = {
+        'motion': motion,
+        'value_list': value_list
+    }
+    return render(request, 'robocms/value/index.html', context)
+
