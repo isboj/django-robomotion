@@ -27,6 +27,7 @@ class Motion(models.Model):
     """
     robot = models.ForeignKey(Robot, related_name='motions', on_delete=models.CASCADE)
     motion_name = models.CharField(max_length=100)
+    motion_num = models.IntegerField(blank=True)
     motion_category = models.CharField(max_length=100)
     value_info = models.TextField(blank=True)
 

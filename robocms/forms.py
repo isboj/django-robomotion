@@ -48,7 +48,7 @@ class MotionFrom(ModelForm):
 
     class Meta:
         model = Motion
-        fields = ('robot', 'motion_name', 'motion_category', 'value_info')
+        fields = ('robot', 'motion_name', 'motion_num', 'motion_category', 'value_info')
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')  # viewから値を受け取る

@@ -3,13 +3,25 @@
 {% block title %}Index{% endblock %}
 
 {% block main %}
+<div class="page-header header-filter clear-filter purple-filter header-small" data-parallax="true" style="background-image: url('./assets/img/bg2.jpg');">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 ml-auto mr-auto">
+                <div class="brand">
+                    <h1>{{ motion.motion_name }}のフレーム一覧</h1>
+                    <h3>フレームを確認</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<div class="page-header header-filter" data-parallax="true" style="background-color: #b8ecf3">
+<div class="main main-raised">
+  <div class="section section-basic">
     <div class="container">
       <div class="row">
         <div class="col-md-10">
             {% if value_list %}
-                <h2>{{ motion.motion_name }}</h2>
                 <table class="table table-striped">
                 <thead>
                     <tr>
@@ -32,6 +44,7 @@
         </div>
       </div>
     </div>
+  </div>
 </div>
 
 {% endblock %}
