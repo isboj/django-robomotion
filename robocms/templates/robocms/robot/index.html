@@ -27,6 +27,7 @@
                     <tr>
                         <th>ID</th>
                         <th>名前</th>
+                        <th>操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,6 +36,10 @@
                     <th>{{ robot.id }}</th>
                     <td>
                     <a href="{% url 'robocms:motion_index' robot_id=robot.pk %}">{{ robot.robot_name }}</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'robocms:robot_update' pk=robot.pk %}" class="btn-info btn">編集</a>
+                        <a href="{% url 'robocms:robot_delete' pk=robot.pk %}" class="btn-primary btn">削除</a>
                     </td>
                 </tr>
                 {% endfor %}

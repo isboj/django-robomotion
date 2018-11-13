@@ -4,6 +4,8 @@ from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
 from django.views.generic import UpdateView
+from django.views.generic import DeleteView
+from django.urls import reverse_lazy
 from django.contrib import messages
 
 from .models import Robot, Motion
@@ -48,6 +50,19 @@ class RobotCreateView(CreateView):
         kwargs = super(RobotCreateView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
+
+
+class RobotDeleteView(DeleteView):
+    """
+    ロボット削除
+    """
+    model = Robot
+    success_url = reverse_lazy("robocms:robot_index")
+
+    def get(self, request, *args, **kwargs):
+        # 確認ビューは表示しない
+        # 確認は、ポップアップにて行う
+        return self.post(request, *args, **kwargs)
 
 
 class RobotUpdateView(UpdateView):
