@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/2.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
+from django.contrib.messages import constants as message_constants
 
 import os
 
@@ -154,3 +155,11 @@ LOGIN_REDIRECT_URL = '/'
 
 # 独自定義のユーザモデル
 AUTH_USER_MODEL = 'accounts.user'
+
+# Message settings
+MESSAGE_TAGS = {
+    message_constants.INFO: 'alert alert-info',
+    message_constants.SUCCESS: 'alert alert-success',
+    message_constants.WARNING: 'alert alert-warning',
+    message_constants.ERROR: 'alert alert-danger',
+}

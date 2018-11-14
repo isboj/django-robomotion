@@ -7,6 +7,7 @@ from django.views.generic import UpdateView
 from django.views.generic import DeleteView
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.contrib import messages
 
 from .models import Robot, Motion
 from .forms import RobotForm, MotionFrom
@@ -38,11 +39,14 @@ class RobotCreateView(CreateView):
     model = Robot
     template_name = 'robocms/edit.html'
     form_class = RobotForm
-    success_url = "/robocms/"
+    success_url = reverse_lazy('robocms:robot_index')
 
     # ログインしているユーザを設定
     def form_valid(self, form):
         form.instance.user = self.request.user
+        messages.success(self.request,
+                         "{}を追加しました".format(form.instance.robot_name),
+                         extra_tags="check")
         return super(RobotCreateView, self).form_valid(form)
 
     # kwargsで値渡し
@@ -63,6 +67,13 @@ class RobotDeleteView(DeleteView):
         # 確認ビューは表示しない
         # 確認は、ポップアップにて行う
         return self.post(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        object_ = self.get_object()
+        messages.success(self.request,
+                         "{}の削除が完了しました".format(object_.robot_name),
+                         extra_tags="check")
+        return super(RobotDeleteView, self).delete(request, *args, **kwargs)
 
 
 class RobotUpdateView(UpdateView):
@@ -114,6 +125,7 @@ class MotionCreateView(CreateView):
         kwargs = super(MotionCreateView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
+
 
 def motion_edit(request, pk=None):
     if pk:

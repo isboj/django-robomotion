@@ -5,6 +5,7 @@ from django.contrib.auth.views import (
     PasswordResetConfirmView, PasswordResetCompleteView
 )
 from django.urls import path
+from django.urls import reverse_lazy
 
 from accounts import views
 from accounts.forms import CustomAuthForm
@@ -15,9 +16,7 @@ urlpatterns = [
          name='login',
          kwargs={"authentication_form": CustomAuthForm}),
     path('logout/', LogoutView.as_view(template_name='accounts/logout.html'), name='logout'),
-
-    path('password_change/', PasswordChangeView.as_view(template_name='accounts/password_change.html'),
-         name='password_change'),
+    path('password_change/', views.PasswordChangeView.as_view(), name='password_change'),
     path('password_change/done/', PasswordChangeDoneView.as_view(template_name='accounts/password_change_done.html'),
          name='password_change_done'),
 
