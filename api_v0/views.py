@@ -34,7 +34,6 @@ class RobotViewSet(viewsets.ModelViewSet):
 
         user = self.request.user  # ログイン中のユーザのロボットを取得
         try:
-            # TODO: getでは同一名があれば、エラーとなる。登録時に一意にする必要あり。
             robot = user.robots.all().get(robot_name=robot_name)
         except exceptions.ObjectDoesNotExist:
             response["message"] = "Robot name not exist."
@@ -70,7 +69,6 @@ class RobotViewSet(viewsets.ModelViewSet):
         # ロボットidはget_robot_idを行ったことにより、正確である前提
         robot = user.robots.all().get(id=pk)
         try:
-            # TODO: getでは同一名があれば、エラーとなる。登録時に一意にする必要あり。
             motion = robot.motions.all().get(motion_name=motion_name)
         except exceptions.ObjectDoesNotExist:
             response["message"] = "Motion name not exist."

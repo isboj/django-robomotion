@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block title %}Index{% endblock %}
+
+{% block main %}
+<div class="page-header header-filter clear-filter purple-filter header-small" data-parallax="true" style="background-image: url('./assets/img/bg2.jpg');">
+    <div class="container">
+        {% include "message.html" %}
+        <div class="row">
+            <div class="col-md-8 ml-auto mr-auto">
+                <div class="brand">
+                    <h1>フレーム一覧・削除</h1>
+                    <h3>フレームを確認</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main main-raised">
+  <div class="section section-basic">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-10">
+
+            {% if objects %}
+                <form class="form" method="post">
+                {% csrf_token %}
+
+                {# TODO: 確認モーダルを表示するか検討の余地あり(通常の設置方法では、確認ができない) #}
+                <button class="btn btn-danger " action=" ">
+                    削除
+                </button>
+                <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>ID</th>
+                        <th>データ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for obj in objects %}
+                <tr>
+                    <th>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="checkbox"  name="checkboxes" id="inlineCheckbox1" value="{{ obj.id }}">
+                                <span class="form-check-sign">
+                                    <span class="check"></span>
+                                </span>
+                            </label>
+                        </div>
+                    </th>
+                    <th>{{ obj.id }}</th>
+                    <td>{{ obj.data }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+                </table>
+                </form>
+            {% else %}
+                <h2>登録されているフレームデータはありません</h2>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+{% endblock %}
+
+

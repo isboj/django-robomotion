@@ -35,7 +35,7 @@
                 <tr>
                     <th>{{ motion.id }}</th>
                     <td>
-                    <a href="{% url 'robocms:value_index' motion_id=motion.id %}">{{ motion.motion_name }}</a>
+                    <a href="{% url 'robocms:value_index_delete' motion_id=motion.id %}">{{ motion.motion_name }}</a>
                     </td>
                 </tr>
                 {% endfor %}

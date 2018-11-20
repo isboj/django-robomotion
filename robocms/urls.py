@@ -14,6 +14,6 @@ urlpatterns = [
     path('motion/<int:robot_id>/index', views.motion_index_in_robot, name='motion_index'),
     path('motion/add', views.MotionCreateView.as_view(), name='motion_add'),
     # Value関連
-    path('value/<int:motion_id>/index', views.value_index_in_motion, name='value_index')
-
+    path('value/<int:motion_id>/index', views.value_index_in_motion, name='value_index'),
+    path('value/<int:motion_id>/index_delete', views.ValueMultipleDeleteView.as_view(), name='value_index_delete')
 ]

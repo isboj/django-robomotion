@@ -1,6 +1,7 @@
 from django.forms import ModelForm
-from robocms.models import Robot, Motion
+from robocms.models import Robot, Motion, Value
 from django import forms
+from django.forms import Form
 
 
 class RobotForm(ModelForm):
@@ -76,3 +77,11 @@ class MotionFrom(ModelForm):
             raise forms.ValidationError(error_message)
 
         return cleaned_data
+
+
+class ValueMultipleDeleteForm(Form):
+
+    checkboxes = forms.ModelMultipleChoiceField(
+        Value.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )

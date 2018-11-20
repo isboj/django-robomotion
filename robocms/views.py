@@ -1,16 +1,18 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.views import generic
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
 from django.views.generic import UpdateView
 from django.views.generic import DeleteView
+from django.views.generic import FormView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib import messages
 
-from .models import Robot, Motion
-from .forms import RobotForm, MotionFrom
+from .models import Robot, Motion, Value
+from .forms import RobotForm, MotionFrom, ValueMultipleDeleteForm
 
 # === ロボットに関するView ===
 
@@ -167,3 +169,39 @@ def value_index_in_motion(request, motion_id):
     }
     return render(request, 'robocms/value/index.html', context)
 
+
+class ValueMultipleDeleteView(FormView):
+    """
+    バリュー(フレーム)の一覧表示、および選択削除機能
+    """
+
+    form_class = ValueMultipleDeleteForm
+    template_name = 'robocms/value/multiple_delete.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ValueMultipleDeleteView, self).get_context_data(**kwargs)
+        # urlからvalueを取得
+        motion = Motion.objects.get(id=self.kwargs["motion_id"])
+        context['objects'] = motion.values.all()  # Customize this queryset to your liking
+        return context
+
+    def get_form(self, form_class=None):
+        form = super(ValueMultipleDeleteView, self).get_form(form_class)
+        #form.fields['checkboxes'].queryset = Value.objects.all()
+        # urlからvalueを取得
+        motion = Motion.objects.get(id=self.kwargs["motion_id"])
+        form.fields['checkboxes'].queryset = motion.values.all()
+        return form
+
+    def form_valid(self, form):
+        qs = Value.objects.filter(
+            pk__in=list(map(int, self.request.POST.getlist('checkboxes')))
+        )
+        qs_len = len(qs)
+        qs.delete()
+        motion = Motion.objects.get(id=self.kwargs["motion_id"])
+        messages.success(self.request,
+                         "{}個のフレーム削除が完了しました".format(qs_len),
+                         extra_tags="check")
+        # 同じビューにリダイレクト
+        return HttpResponseRedirect(reverse_lazy('robocms:value_index_delete', kwargs={'motion_id': motion.id}))
