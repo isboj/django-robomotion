@@ -27,6 +27,7 @@
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Motion Num</th>
                         <th>モーション名</th>
                     </tr>
                 </thead>
@@ -34,6 +35,7 @@
                 {% for motion in motion_list %}
                 <tr>
                     <th>{{ motion.id }}</th>
+                    <td>{{ motion.motion_num }}</td>
                     <td>
                     <a href="{% url 'robocms:value_index_delete' motion_id=motion.id %}">{{ motion.motion_name }}</a>
                     </td>

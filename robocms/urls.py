@@ -11,9 +11,11 @@ urlpatterns = [
     path('robot/<int:pk>/update/', views.RobotUpdateView.as_view(), name='robot_update'),  # 編集
     path('robot/<int:pk>/delete/', views.RobotDeleteView.as_view(), name='robot_delete'),  # 削除
     # モーション関連
-    path('motion/<int:robot_id>/index', views.motion_index_in_robot, name='motion_index'),
-    path('motion/add', views.MotionCreateView.as_view(), name='motion_add'),
+    # robot_idに関するmotionの一覧表示
+    path('robot/<int:robot_id>/motion/index', views.MotionIndexView.as_view(), name='motion_index'),
+    path('motion/add', views.MotionCreateView.as_view(), name='motion_add'),  # 新規登録
+    path('motion/<int:pk>/update', views.MotionUpdateView.as_view(), name='motion_update'),  # 編集
     # Value関連
-    path('value/<int:motion_id>/index', views.value_index_in_motion, name='value_index'),
-    path('value/<int:motion_id>/index_delete', views.ValueMultipleDeleteView.as_view(), name='value_index_delete')
+    path('motion/<int:motion_id>/value/index', views.value_index_in_motion, name='value_index'),
+    path('motion/<int:motion_id>/value/index_delete', views.ValueMultipleDeleteView.as_view(), name='value_index_delete')
 ]

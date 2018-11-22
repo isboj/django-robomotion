@@ -96,21 +96,25 @@ class RobotUpdateView(UpdateView):
 
 # ===モーションに関するView===
 
+class MotionIndexView(generic.ListView):
+    """
+    ロボットに関するモーションの一覧表示
+    """
+    template_name = 'robocms/motion/index.html'
+    context_object_name = 'motion_list'
 
-def motion_index_in_robot(request, robot_id):
-    """
-    ロボットに属するモーションの一覧表示
-    :param request:
-    :param robot_id:
-    :return:
-    """
-    robot = Robot.objects.get(id=robot_id)
-    motion_list = robot.motions.all()
-    context = {
-        'robot': robot,
-        'motion_list': motion_list
-    }
-    return render(request, 'robocms/motion/index.html', context)
+    def get_queryset(self):
+        # TODO: ログインユーザの確認が必要
+        robot = Robot.objects.get(id=self.kwargs["robot_id"])
+        motion_list = robot.motions.all().order_by("motion_num")
+        return motion_list
+
+    def get_context_data(self, **kwargs):
+        context = super(MotionIndexView, self).get_context_data(**kwargs)
+        # urlからvalueを取得
+        robot = Robot.objects.get(id=self.kwargs["robot_id"])
+        context['robot'] = robot  # Customize this queryset to your liking
+        return context
 
 
 class MotionCreateView(CreateView):
@@ -125,6 +129,22 @@ class MotionCreateView(CreateView):
     # kwargsで値渡し
     def get_form_kwargs(self):
         kwargs = super(MotionCreateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+
+class MotionUpdateView(UpdateView):
+    """
+    モーション更新
+    """
+    model = Motion
+    template_name = 'robocms/edit.html'
+    form_class = MotionFrom
+    success_url = "/robocms/"
+
+    # kwargsで値渡し
+    def get_form_kwargs(self):
+        kwargs = super(MotionUpdateView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
