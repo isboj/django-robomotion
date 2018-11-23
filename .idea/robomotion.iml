@@ -14,7 +14,7 @@
   </component>
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$" />
-    <orderEntry type="jdk" jdkName="Remote Python 3.6.4 (sftp://cs1@133.37.61.82:22/home/cs1/.pyenv/versions/anaconda3-5.1.0/envs/django36/bin/python)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.6 (robomotion)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">
