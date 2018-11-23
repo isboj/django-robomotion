@@ -67,7 +67,7 @@ class MotionFrom(ModelForm):
         if self.robot:
             # 指定されていたロボットのみ選択できる
             self.fields["robot"].initial = self.robot
-            self.fields["robot"].disabled = True
+            #self.fields["robot"].disabled = True
             # ロボットが定まるので、MotionNumも絞られる
             motion_num = self.robot.motions.count()
             self.fields["motion_num"] = forms.ChoiceField(
@@ -79,8 +79,9 @@ class MotionFrom(ModelForm):
         複数フィールドのバリデーション
         :return:
         """
+        cleaned_data = super(ModelForm, self).clean()
         robot_ = self.cleaned_data.get('robot')
-        motion_name = self.cleaned_data.get('motion_name')
+        motion_name = cleaned_data.get('motion_name')
 
         same_name_motions = robot_.motions.filter(motion_name=motion_name)
         # updateアクションの際はエラーとならない。なお、同名のmotionが既に二つ以上あることは想定していない。

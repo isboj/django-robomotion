@@ -39,8 +39,14 @@ class Motion(models.Model):
 
         # 番号を入れ替える必要があるとき(更新の場合)
         if self.id is not None:
+            old_robot = Motion.objects.filter(id=self.id)[0].robot  # 更新前のロボットオブジェクト
             motions.filter(id=self.id).delete()  # 更新の場合は更新するものを、まず削除
             motions_size = motions.count()
+
+            # 更新後に異なるrobotに所属する場合
+            if old_robot.id != robot.id:
+                # 所属するrobotが違う場合は、古いロボットのモーションを再計算する
+                self.recalc_motion_num(old_robot)
 
         if len(motions) < 1:
             # モーションが存在しないとき(最初のモーション作成)
@@ -63,6 +69,18 @@ class Motion(models.Model):
                     is_passed_num = 1
 
         super(Motion, self).save(*args, **kwargs)
+
+    def recalc_motion_num(self, robot):
+        """
+        motion_numを再計算する
+        :param robot: 再計算したいrobot
+        :return:
+        """
+        motions = robot.motions.all().order_by("motion_num")
+        motions.filter(id=self.id).delete()  # self.idがなくなった場合の再計算を行う
+        # TODO: 削除の場合はすべてfor分を回す必要はないと思う（途中から開始で良いと思う）
+        for i, obj in enumerate(motions):
+            Motion.objects.filter(id=obj.id).update(motion_num=i)
 
     def __repr__(self):
         # 主キーとnameを返して見やすくする
