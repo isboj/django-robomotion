@@ -14,6 +14,8 @@ urlpatterns = [
     # robot_idに関するmotionの一覧表示
     path('robot/<int:robot_id>/motion/index', views.MotionIndexView.as_view(), name='motion_index'),
     path('motion/add', views.MotionCreateView.as_view(), name='motion_add'),  # 新規登録
+    # 新規登録(ロボットは分かった状態)
+    path("motion/<int:robot_id>/add", views.MotionCreateView.as_view(), name="motion_add_with_robot"),
     path('motion/<int:pk>/update', views.MotionUpdateView.as_view(), name='motion_update'),  # 編集
     # Value関連
     path('motion/<int:motion_id>/value/index', views.value_index_in_motion, name='value_index'),

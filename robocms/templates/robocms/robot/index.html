@@ -39,6 +39,7 @@
                     <a href="{% url 'robocms:motion_index' robot_id=robot.pk %}">{{ robot.robot_name }}</a>
                     </td>
                     <td>
+                        <a href="{% url 'robocms:motion_add_with_robot' robot_id=robot.pk %}" class="btn-info btn">モーション追加</a>
                         <a href="{% url 'robocms:robot_update' pk=robot.pk %}" class="btn-info btn">編集</a>
                         <button class="btn btn-danger del_confirm" data-toggle="modal" data-target="#deleteModal" data-pk="{{ robot.robot_name }}" data-url="{% url 'robocms:robot_delete' pk=robot.pk %}">
                             削除

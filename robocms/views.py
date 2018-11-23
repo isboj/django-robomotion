@@ -124,13 +124,20 @@ class MotionCreateView(CreateView):
     model = Motion
     template_name = 'robocms/edit.html'
     form_class = MotionFrom
-    success_url = "/robocms/"
+    #success_url = "/robocms/"
 
     # kwargsで値渡し
     def get_form_kwargs(self):
         kwargs = super(MotionCreateView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
+        if "robot_id" in self.kwargs:
+            # Motionを作成するロボットがわかっているとき
+            kwargs['robot'] = Robot.objects.get(id=self.kwargs["robot_id"])
         return kwargs
+
+    def get_success_url(self):
+        robot_id = self.object.robot.id
+        return reverse_lazy('robocms:motion_index', kwargs={'robot_id': robot_id})
 
 
 class MotionUpdateView(UpdateView):
@@ -140,13 +147,18 @@ class MotionUpdateView(UpdateView):
     model = Motion
     template_name = 'robocms/edit.html'
     form_class = MotionFrom
-    success_url = "/robocms/"
+    #success_url = "/robocms/"
 
     # kwargsで値渡し
     def get_form_kwargs(self):
         kwargs = super(MotionUpdateView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
+        #kwargs["pk"] = self.kwargs["pk"]
         return kwargs
+
+    def get_success_url(self):
+        robot_id = self.object.robot.id
+        return reverse_lazy('robocms:motion_index', kwargs={'robot_id': robot_id})
 
 
 def motion_edit(request, pk=None):

@@ -37,10 +37,10 @@ class Motion(models.Model):
         motions = robot.motions.all().order_by("motion_num")
         motions_size = motions.count()
 
-        # 番号を入れ替える必要があるとき
-        if Motion.objects.filter(self.id).exists():
-            print("SELF ID IS NOT NONE")
-            motions.get(motion_num=self.motion_num).delete()
+        # 番号を入れ替える必要があるとき(更新の場合)
+        if self.id is not None:
+            motions.filter(id=self.id).delete()  # 更新の場合は更新するものを、まず削除
+            motions_size = motions.count()
 
         if len(motions) < 1:
             # モーションが存在しないとき(最初のモーション作成)
@@ -52,16 +52,16 @@ class Motion(models.Model):
             self.motion_num = motions_size  # 最後の値に設定
         else:
             # 入れ替える必要のあるオブジェクト
-            motion_id_count = 0
-            print('fdasfdsafdsafdsa')
-            for i in range(motions_size):
-                print("RANVGE I", i)
+            is_passed_num = 0  # 新規の挿入が出来たかどうが(intでないといけない)
+            for i in range(motions_size+1):
                 if i is not self.motion_num:
-                    print('MFSADF', i, motion_id_count)
-                    Motion.objects.filter(id=motions[motion_id_count].id).update(motion_num=i)
+                    # 挿入したい番号でない場合
+                    # すべてのmotionに対して番号の更新を行う。(updateアクションを考慮している)
+                    Motion.objects.filter(id=motions[i - is_passed_num].id).update(motion_num=i)
                 else:
-                    motion_id_count += 1
-                motion_id_count += 1
+                    # 番号を挿入したら、一つずらす
+                    is_passed_num = 1
+
         super(Motion, self).save(*args, **kwargs)
 
     def __repr__(self):
