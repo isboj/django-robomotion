@@ -70,6 +70,12 @@ class Motion(models.Model):
 
         super(Motion, self).save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        robot = self.robot  # 削除するmotionのrobotを取得
+        self.recalc_motion_num(robot)  # motion_numの再計算を行う
+
+        super(Motion, self).delete(*args, **kwargs)
+
     def recalc_motion_num(self, robot):
         """
         motion_numを再計算する

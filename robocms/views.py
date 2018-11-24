@@ -161,6 +161,31 @@ class MotionUpdateView(UpdateView):
         return reverse_lazy('robocms:motion_index', kwargs={'robot_id': robot_id})
 
 
+class MotionDeleteView(DeleteView):
+    """
+    モーション削除
+    """
+    model = Motion
+    #success_url = reverse_lazy("robocms:robot_index")
+
+    def get(self, request, *args, **kwargs):
+        # 確認ビューは表示しない
+        # 確認は、ポップアップにて行う
+        return self.post(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        object_ = self.get_object()
+        messages.success(self.request,
+                         "{}の削除が完了しました".format(object_.motion_name),
+                         extra_tags="check")
+        return super(MotionDeleteView, self).delete(request, *args, **kwargs)
+
+    def get_success_url(self):
+        robot_id = self.object.robot.id
+        return reverse_lazy('robocms:motion_index', kwargs={'robot_id': robot_id})
+
+
+
 def motion_edit(request, pk=None):
     if pk:
         # motion_idが指定されている
