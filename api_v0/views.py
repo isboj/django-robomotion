@@ -3,10 +3,11 @@ import django_filters
 from rest_framework import viewsets, filters
 from rest_framework.decorators import detail_route, action
 from rest_framework.response import Response
+from rest_framework.generics import ListAPIView
 from django.core import exceptions
 
 from robocms.models import Robot, Motion, Value
-from .serializer import RobotSerializer, MotionSerializer, ValueSerializer
+from .serializer import RobotSerializer, MotionSerializer, ValueSerializer, ValueListSerializer
 
 
 class RobotViewSet(viewsets.ModelViewSet):
@@ -121,3 +122,58 @@ class MotionViewSet(viewsets.ModelViewSet):
 class ValueViewSet(viewsets.ModelViewSet):
     queryset = Value.objects.all()
     serializer_class = ValueSerializer
+
+
+class RobotValueListAPIView(ListAPIView):
+    """
+    ロボットが所持するvalue(フレーム)の一覧を返す
+
+    問い合わせ例
+    -------------
+    * ex: robot_id=1のvalue(フレーム)一覧を取得::
+        /robot_values/1
+    * ex: robot_id=1のvalue(フレーム)の0番目を取得::
+        /robot_values/1?count=0
+    * ex: robot_id=1のmotionのうち、motion_id=2の一覧を取得::
+        /robot_values/1?motion_id=2
+    * ex: robot_id=1でmotion_id=2のvalue(フレーム)の0番目を取得::
+        /robot_values/1?motion_id=2&count=0
+    """
+
+    queryset = Value.objects.all()
+    serializer_class = ValueListSerializer
+    http_method_names = ['get', ]  # Getしか受け付けない
+
+    authentication_classes = ()
+    permission_classes = ()
+
+    def __init__(self, *args, **kwargs):
+        super(RobotValueListAPIView, self).__init__(*args, **kwargs)
+        self.values = None
+        self.size = 0
+
+    def get_queryset(self):
+        robot_id = self.kwargs["robot_id"]
+        self.values = Value.objects.filter(motion__robot_id=robot_id)  # 指定されたrobotを取得
+        self.size = self.values.count()  # 取得したvaluesのサイズ
+        if "motion_id" in self.request.query_params:
+            # motionが指定されている場合
+            motion_id = self.request.query_params["motion_id"]
+            # valuesの絞り込みにmotionも含める
+            self.values = Value.objects.filter(motion__robot_id=robot_id, motion_id=motion_id)
+            self.size = self.values.count()  # valuesのサイズを更新
+
+        if "count" in self.request.query_params:
+            # countが指定されている場合
+            # *ここでは、サイズの更新は行わない。
+            count = self.request.query_params["count"]
+            self.values = self.values[int(count):int(count)+1]  # countの部分だけ返す
+        return self.values
+
+    def get_serializer_context(self):
+        # serializerに渡す値
+        context = {}
+        if "count" in self.request.query_params:
+            context["count"] = self.request.query_params["count"]
+        context["size"] = self.size
+        return context

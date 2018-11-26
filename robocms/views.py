@@ -239,7 +239,7 @@ class ValueMultipleDeleteView(FormView):
         context = super(ValueMultipleDeleteView, self).get_context_data(**kwargs)
         # urlからvalueを取得
         motion = Motion.objects.get(id=self.kwargs["motion_id"])
-        context['objects'] = motion.values.all()  # Customize this queryset to your liking
+        context['objects'] = motion.values.all().order_by("id")  # Customize this queryset to your liking
         return context
 
     def get_form(self, form_class=None):
@@ -247,7 +247,7 @@ class ValueMultipleDeleteView(FormView):
         #form.fields['checkboxes'].queryset = Value.objects.all()
         # urlからvalueを取得
         motion = Motion.objects.get(id=self.kwargs["motion_id"])
-        form.fields['checkboxes'].queryset = motion.values.all()
+        form.fields['checkboxes'].queryset = motion.values.all().order_by("id")
         return form
 
     def form_valid(self, form):

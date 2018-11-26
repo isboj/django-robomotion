@@ -15,14 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls import url
 
-from api_v0.urls import router as api_v0_router
 from robocms.views import home
 
 urlpatterns = [
     #path('', index),  # 最初のページ
     path('robocms/', include(('robocms.urls', 'robocms'), )),
-    path('api_v0/', include(api_v0_router.urls)),
+    path('api_v0/', include(('api_v0.urls', 'api_v0'), )),
     # ログイン関連ビュー
     path('accounts/', include(('accounts.urls', 'accounts'), )),
     # auth api by jwt
