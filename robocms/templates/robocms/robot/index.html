@@ -28,7 +28,9 @@
                     <tr>
                         <th>ID</th>
                         <th>名前</th>
-                        <th>操作</th>
+                        <th>公開設定</th>
+                        <th>公開用Key</th>
+                        <th>アクション</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,6 +40,14 @@
                     <td>
                     <a href="{% url 'robocms:motion_index' robot_id=robot.pk %}">{{ robot.robot_name }}</a>
                     </td>
+                    <td>
+                        {% if robot.is_public %}
+                            公開中
+                        {% else %}
+                            非公開
+                        {% endif %}
+                    </td>
+                    <td>{{ robot.share_key }}</td>
                     <td>
                         <a href="{% url 'robocms:motion_add_with_robot' robot_id=robot.pk %}" class="btn-info btn">モーション追加</a>
                         <a href="{% url 'robocms:robot_update' pk=robot.pk %}" class="btn-info btn">編集</a>

@@ -1,6 +1,18 @@
 from django.db import models
 from django.conf import settings
 
+import random, string
+
+
+def random_key(n):
+    """
+    n文字のランダムな文字列を作成する(大文字・小文字英数字)
+    :param n:
+    :return:
+    """
+    key = [random.choice(string.ascii_letters + string.digits) for i in range(n)]
+    return ''.join(key)
+
 
 class Robot(models.Model):
     """
@@ -12,6 +24,8 @@ class Robot(models.Model):
                              on_delete=models.CASCADE)
     robot_name = models.CharField(max_length=100)
     robot_category = models.CharField(max_length=100)
+    is_public = models.BooleanField(default=False)  # robotの共有可否
+    share_key = models.CharField(max_length=10, default=random_key(10))  # 共有用key
 
     def __repr__(self):
         # 主キーとnameを返して見やすくする

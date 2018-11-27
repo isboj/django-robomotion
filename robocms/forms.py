@@ -12,7 +12,7 @@ class RobotForm(ModelForm):
     """
     class Meta:
         model = Robot
-        fields = ('user', 'robot_name')
+        fields = ('user', 'robot_name', 'is_public')
         exclude = ('user',)  # ユーザは入力できない
 
     def __init__(self, *args, **kwargs):
@@ -27,10 +27,10 @@ class RobotForm(ModelForm):
         cleaned_data = super(ModelForm, self).clean()
         robot_name = cleaned_data.get('robot_name')
 
-        print(self.user, robot_name)
-        if self.user.robots.filter(robot_name=robot_name).exists():
+        same_name_robots = self.user.robots.filter(robot_name=robot_name)
+        # updateアクションの際はエラーとならない。なお、同名のrobotが既に二つ以上あることは想定していない。
+        if same_name_robots.count() > 0 and same_name_robots[0].id != self.instance.pk:
             # 既に、同名のロボットが存在していた時
-            # TODO: updateの時自分自身を参照するため、条件を追加する必要あり
             raise forms.ValidationError('このロボット名は既に存在します')
 
         return cleaned_data
