@@ -10,6 +10,12 @@ class RobotForm(ModelForm):
     """
     ロボットのフォーム
     """
+    is_public = forms.BooleanField(
+        label="外部に公開する",
+        required=False,
+        initial=False,
+    )
+
     class Meta:
         model = Robot
         fields = ('user', 'robot_name', 'is_public')
@@ -27,9 +33,8 @@ class RobotForm(ModelForm):
         cleaned_data = super(ModelForm, self).clean()
         robot_name = cleaned_data.get('robot_name')
 
-        same_name_robots = self.user.robots.filter(robot_name=robot_name)
         # updateアクションの際はエラーとならない。なお、同名のrobotが既に二つ以上あることは想定していない。
-        if same_name_robots.count() > 0 and same_name_robots[0].id != self.instance.pk:
+        if self.user.robots.filter(robot_name=robot_name).exclude(id=self.instance.pk).exists():
             # 既に、同名のロボットが存在していた時
             raise forms.ValidationError('このロボット名は既に存在します')
 
@@ -66,8 +71,8 @@ class MotionFrom(ModelForm):
         self.fields["robot"].queryset = self.user.robots.all()
         if self.robot:
             # 指定されていたロボットのみ選択できる
-            self.fields["robot"].initial = self.robot
             #self.fields["robot"].disabled = True
+            self.fields["robot"].initial = self.robot
             # ロボットが定まるので、MotionNumも絞られる
             motion_num = self.robot.motions.count()
             self.fields["motion_num"] = forms.ChoiceField(
@@ -83,9 +88,8 @@ class MotionFrom(ModelForm):
         robot_ = self.cleaned_data.get('robot')
         motion_name = cleaned_data.get('motion_name')
 
-        same_name_motions = robot_.motions.filter(motion_name=motion_name)
         # updateアクションの際はエラーとならない。なお、同名のmotionが既に二つ以上あることは想定していない。
-        if same_name_motions.count() > 0 and same_name_motions[0].id != self.instance.pk:
+        if robot_.motions.filter(motion_name=motion_name).exclude(id=self.instance.pk).exists():
             # 既に、同名のモーションが存在していた時
             error_message = "{}のモーション: {} は既に存在します".format(robot_.robot_name, motion_name)
             self.error_count += 1

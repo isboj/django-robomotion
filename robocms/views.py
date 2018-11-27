@@ -10,6 +10,7 @@ from django.views.generic import FormView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib import messages
+from django.http import Http404
 
 from .models import Robot, Motion, Value
 from .forms import RobotForm, MotionFrom, ValueMultipleDeleteForm
@@ -85,7 +86,7 @@ class RobotUpdateView(UpdateView):
     model = Robot
     template_name = 'robocms/edit.html'
     form_class = RobotForm
-    success_url = "/robocms/"
+    success_url = reverse_lazy("robocms:robot_index")
 
     # kwargsで値渡し
     def get_form_kwargs(self):
@@ -104,9 +105,11 @@ class MotionIndexView(generic.ListView):
     context_object_name = 'motion_list'
 
     def get_queryset(self):
-        # TODO: ログインユーザの確認が必要
-        robot = Robot.objects.get(id=self.kwargs["robot_id"])
-        motion_list = robot.motions.all().order_by("motion_num")
+        robot = Robot.objects.filter(user=self.request.user, id=self.kwargs["robot_id"])
+        if not (robot.count() > 0):
+            # ログイン中のユーザが持つrobotが存在しない場合
+            raise Http404  # 404エラー画面を表示
+        motion_list = robot[0].motions.all().order_by("motion_num")
         return motion_list
 
     def get_context_data(self, **kwargs):
@@ -229,10 +232,15 @@ def value_index_in_motion(request, motion_id):
 class ValueMultipleDeleteView(FormView):
     """
     バリュー(フレーム)の一覧表示、および選択削除機能
+
+    TODO: ログイン中のユーザの確認が必要
     """
 
     form_class = ValueMultipleDeleteForm
     template_name = 'robocms/value/multiple_delete.html'
+
+    def __init__(self, *args, **kwargs):
+        super(ValueMultipleDeleteView, self).__init__(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(ValueMultipleDeleteView, self).get_context_data(**kwargs)
@@ -243,7 +251,7 @@ class ValueMultipleDeleteView(FormView):
 
     def get_form(self, form_class=None):
         form = super(ValueMultipleDeleteView, self).get_form(form_class)
-        #form.fields['checkboxes'].queryset = Value.objects.all()
+        # form.fields['checkboxes'].queryset = Value.objects.all()
         # urlからvalueを取得
         motion = Motion.objects.get(id=self.kwargs["motion_id"])
         form.fields['checkboxes'].queryset = motion.values.all().order_by("id")
