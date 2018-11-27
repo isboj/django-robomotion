@@ -19,7 +19,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             'unique': _("A user with that username already exists."),
         },
     )
-    email = models.EmailField(_('email address'), blank=True)
+    email = models.EmailField(_('email address'), blank=False, unique=True)
     profile_icon = models.ImageField(_('profile icon'), upload_to='profile_icons', null=True, blank=True)
     self_introduction = models.CharField(_('self introduction'), max_length=512, blank=True)
     is_admin = models.BooleanField(default=False)

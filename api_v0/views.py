@@ -130,13 +130,20 @@ class RobotValueListAPIView(ListAPIView):
 
     問い合わせ例
     -------------
-    * ex: robot_id=1のvalue(フレーム)一覧を取得::
+    ex: robot_id=1のvalue(フレーム)一覧を取得::
+
         /robot_values/1
-    * ex: robot_id=1のvalue(フレーム)の0番目を取得::
+
+    ex: robot_id=1のvalue(フレーム)の0番目を取得::
+
         /robot_values/1?count=0
-    * ex: robot_id=1のmotionのうち、motion_id=2の一覧を取得::
+
+    ex: robot_id=1のmotionのうち、motion_id=2の一覧を取得::
+
         /robot_values/1?motion_id=2
-    * ex: robot_id=1でmotion_id=2のvalue(フレーム)の0番目を取得::
+
+    ex: robot_id=1でmotion_id=2のvalue(フレーム)の0番目を取得::
+
         /robot_values/1?motion_id=2&count=0
     """
 
@@ -154,13 +161,14 @@ class RobotValueListAPIView(ListAPIView):
 
     def get_queryset(self):
         robot_id = self.kwargs["robot_id"]
-        self.values = Value.objects.filter(motion__robot_id=robot_id)  # 指定されたrobotを取得
+        # 指定されたrobotを取得
+        self.values = Value.objects.filter(motion__robot_id=robot_id).order_by("motion__motion_num", "id")
         self.size = self.values.count()  # 取得したvaluesのサイズ
         if "motion_id" in self.request.query_params:
             # motionが指定されている場合
             motion_id = self.request.query_params["motion_id"]
             # valuesの絞り込みにmotionも含める
-            self.values = Value.objects.filter(motion__robot_id=robot_id, motion_id=motion_id)
+            self.values = Value.objects.filter(motion__robot_id=robot_id, motion_id=motion_id).order_by("id")
             self.size = self.values.count()  # valuesのサイズを更新
 
         if "count" in self.request.query_params:
@@ -168,6 +176,69 @@ class RobotValueListAPIView(ListAPIView):
             # *ここでは、サイズの更新は行わない。
             count = self.request.query_params["count"]
             self.values = self.values[int(count):int(count)+1]  # countの部分だけ返す
+        return self.values
+
+    def get_serializer_context(self):
+        # serializerに渡す値
+        context = {}
+        if "count" in self.request.query_params:
+            context["count"] = self.request.query_params["count"]
+        context["size"] = self.size
+        return context
+
+
+class ShareRobotValueListAPIView(ListAPIView):
+    """
+    共有が許可されているRobotのvalue(フレーム)を取得する
+
+    問い合わせ例
+    -------------
+    ex: share_key=0123456789のvalue(フレーム)一覧を取得::
+
+        /share_key/0123456789
+
+    ex: share_key=0123456789のvalue(フレーム)の0番目を取得::
+
+        /share_key/0123456789?count=0
+
+    share_keyもしくは共有が許可されていない場合のレスポンスは、
+    空列( [] )となります。
+    """
+
+    queryset = Value.objects.all()
+    serializer_class = ValueListSerializer
+    http_method_names = ['get', ]  # Getしか受け付けない
+
+    authentication_classes = ()
+    permission_classes = ()
+
+    def __init__(self, *args, **kwargs):
+        super(ShareRobotValueListAPIView, self).__init__(*args, **kwargs)
+        self.values = None
+        self.size = 0
+
+    def get_queryset(self):
+        share_key = self.kwargs["share_key"]
+
+        robots = Robot.objects.filter(share_key=share_key)
+        # TODO: エラーメッセージ[Exception]を返してあげたほうが、親切
+        if robots.count() > 0:
+            # share_keyに合致するrobotが存在する場合
+            if not robots[0].is_public:
+                # is_public = Trueでないときは、返さない
+                return None
+        else:
+            # share_keyに合致するrobotが存在しない
+            return None
+        # share_keyに基づいて取得
+        self.values = Value.objects.filter(motion__robot__share_key=share_key).order_by("motion__motion_num", "id")
+        self.size = self.values.count()  # 取得したvaluesのサイズ
+
+        if "count" in self.request.query_params:
+            # countが指定されている場合
+            # *ここでは、サイズの更新は行わない。
+            count = self.request.query_params["count"]
+            self.values = self.values[int(count):int(count) + 1]  # countの部分だけ返す
         return self.values
 
     def get_serializer_context(self):

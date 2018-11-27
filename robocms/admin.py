@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth import get_user_model
 
 from .models import Robot, Motion, Value
 
@@ -6,3 +7,5 @@ from .models import Robot, Motion, Value
 admin.site.register(Robot)
 admin.site.register(Motion)
 admin.site.register(Value)
+
+admin.site.register(get_user_model())

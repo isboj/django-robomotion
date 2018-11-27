@@ -185,7 +185,6 @@ class MotionDeleteView(DeleteView):
         return reverse_lazy('robocms:motion_index', kwargs={'robot_id': robot_id})
 
 
-
 def motion_edit(request, pk=None):
     if pk:
         # motion_idが指定されている

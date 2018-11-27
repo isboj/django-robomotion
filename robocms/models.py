@@ -45,9 +45,6 @@ class Motion(models.Model):
     motion_category = models.CharField(max_length=100)
     value_info = models.TextField(blank=True)
 
-    class Meta:
-        ordering = ["motion_num",]
-
     def save(self, *args, **kwargs):
 
         robot = self.robot
@@ -121,4 +118,3 @@ class Value(models.Model):
     motion = models.ForeignKey(Motion, related_name="values", on_delete=models.CASCADE)
     value_num = models.IntegerField(null=True, blank=True)
     data = models.TextField(blank=True)
-

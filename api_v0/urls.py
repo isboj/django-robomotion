@@ -3,7 +3,7 @@ from django.urls import path
 
 from rest_framework import routers
 from .views import RobotViewSet, MotionViewSet, ValueViewSet
-from .views import RobotValueListAPIView
+from .views import RobotValueListAPIView, ShareRobotValueListAPIView
 
 router = routers.DefaultRouter()
 router.register('robots', RobotViewSet)
@@ -12,6 +12,7 @@ router.register('values', ValueViewSet)
 
 urlpatterns = [
     path('robot_values/<int:robot_id>/', RobotValueListAPIView.as_view(), name="robot_values"),
+    path('share_key/<str:share_key>', ShareRobotValueListAPIView.as_view(), name="share_key_values"),
 ]
 
 urlpatterns += router.urls
