@@ -47,14 +47,16 @@ class Motion(models.Model):
 
     def save(self, *args, **kwargs):
 
-        robot = self.robot
-        motions = robot.motions.all().order_by("motion_num")
-        motions_size = motions.count()
+        robot = self.robot  # ロボットを取得
 
-        # 番号を入れ替える必要があるとき(更新の場合)
-        if self.id is not None:
+        if self.id is None:
+            # 新規作成の場合
+            motions = robot.motions.all().order_by("motion_num")  # robotに関するモーションを取得
+            motions_size = motions.count()
+        else:
+            # 更新の場合
             old_robot = Motion.objects.filter(id=self.id)[0].robot  # 更新前のロボットオブジェクト
-            motions.filter(id=self.id).delete()  # 更新の場合は更新するものを、まず削除
+            motions = robot.motions.exclude(id=self.id).order_by("motion_num")  # 更新するものは、除く
             motions_size = motions.count()
 
             # 更新後に異なるrobotに所属する場合
@@ -96,8 +98,7 @@ class Motion(models.Model):
         :param robot: 再計算したいrobot
         :return:
         """
-        motions = robot.motions.all().order_by("motion_num")
-        motions.filter(id=self.id).delete()  # self.idがなくなった場合の再計算を行う
+        motions = robot.motions.exclude(id=self.id).order_by("motion_num")  # self.idがなくなったことを想定
         # TODO: 削除の場合はすべてfor分を回す必要はないと思う（途中から開始で良いと思う）
         for i, obj in enumerate(motions):
             Motion.objects.filter(id=obj.id).update(motion_num=i)
