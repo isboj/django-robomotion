@@ -36,6 +36,7 @@
                     <tr>
                         <th></th>
                         <th>ID</th>
+                        <th>Counter</th>
                         <th>データ</th>
                     </tr>
                 </thead>
@@ -52,7 +53,10 @@
                             </label>
                         </div>
                     </th>
-                    <th>{{ obj.id }}</th>
+                    <th>
+                        <a href="{% url 'robocms:value_detail' pk=obj.id %}">{{ obj.id }}</a>
+                    </th>
+                    <th>{{ forloop.counter }}</th>
                     <td>{{ obj.data }}</td>
                 </tr>
                 {% endfor %}

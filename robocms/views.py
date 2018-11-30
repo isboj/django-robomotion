@@ -269,3 +269,8 @@ class ValueMultipleDeleteView(FormView):
                          extra_tags="check")
         # 同じビューにリダイレクト
         return HttpResponseRedirect(reverse_lazy('robocms:value_index_delete', kwargs={'motion_id': motion.id}))
+
+
+class ValueDetailView(generic.DetailView):
+    model = Value
+    template_name = "robocms/value/detail.html"

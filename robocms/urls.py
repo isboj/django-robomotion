@@ -20,5 +20,6 @@ urlpatterns = [
     path('motion/<int:pk>/delete', views.MotionDeleteView.as_view(), name='motion_delete'),  # 削除
     # Value関連
     path('motion/<int:motion_id>/value/index', views.value_index_in_motion, name='value_index'),
-    path('motion/<int:motion_id>/value/index_delete', views.ValueMultipleDeleteView.as_view(), name='value_index_delete')
+    path('motion/<int:motion_id>/value/index_delete', views.ValueMultipleDeleteView.as_view(), name='value_index_delete'),
+    path('value/<int:pk>/detail', views.ValueDetailView.as_view(), name='value_detail'),  # 詳細
 ]

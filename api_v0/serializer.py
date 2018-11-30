@@ -22,6 +22,10 @@ class ValueSerializer(serializers.ModelSerializer):
 
 
 class ValueListSerializer(serializers.ModelSerializer):
+    """
+    valueを取得するためのserializer
+    登録は考慮していない
+    """
 
     motion_name = serializers.SerializerMethodField()
     motion_num = serializers.SerializerMethodField()
@@ -49,3 +53,36 @@ class ValueListSerializer(serializers.ModelSerializer):
         if "count" in self.context:
             return int(self.context["count"])
         return "Count return only use count param!"
+
+
+class ValueSetSerializer(serializers.ModelSerializer):
+    """
+    valueフレームを登録するためのserializer
+    """
+    class Meta:
+        model = Value
+        fields = ('data',)
+
+    def create(self, validated_data):
+        motion = self.context["motion"]
+        value = Value(
+            motion=motion,
+            value_num=0,
+            data=validated_data['data']
+        )
+        value.save()
+        return value
+
+    def validate(self, attrs):
+        """
+        全体のバリデーション
+        :param attrs:
+        :return:
+        """
+        robot = self.context.get("robot")
+        motion = self.context.get("motion")
+
+        if robot is False:
+            raise serializers.ValidationError("Robot does not exist.")
+        elif motion is False:
+            raise serializers.ValidationError("Motion does not exist.")

@@ -3,11 +3,14 @@ import django_filters
 from rest_framework import viewsets, filters
 from rest_framework.decorators import detail_route, action
 from rest_framework.response import Response
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, ListCreateAPIView
+from rest_framework.views import APIView
 from django.core import exceptions
+from django.contrib.auth import get_user_model
 
 from robocms.models import Robot, Motion, Value
-from .serializer import RobotSerializer, MotionSerializer, ValueSerializer, ValueListSerializer
+from .serializer import RobotSerializer, MotionSerializer, ValueSerializer
+from .serializer import ValueListSerializer, ValueSetSerializer
 
 
 class RobotViewSet(viewsets.ModelViewSet):
@@ -248,3 +251,57 @@ class ShareRobotValueListAPIView(ListAPIView):
             context["count"] = self.request.query_params["count"]
         context["size"] = self.size
         return context
+
+
+class ValueSetView(ListCreateAPIView):
+    """
+    value登録用
+
+    ログインが必要(ユーザに基づき、robotとmotionを検索するため)
+
+    問い合わせ例: (POST)
+    まず、JWTによるログインを行い、リクエストヘッダに認証情報を含める必要がある
+
+    ex: robot_name=pepper, motion_name=motion01にvalueを登録したいとき::
+
+        /value_set/pepper/motion01
+
+    """
+    serializer_class = ValueSetSerializer
+    queryset = Value.objects.all()
+
+    #authentication_classes = ()
+    #permission_classes = ()
+
+    def get_serializer_context(self):
+        # serializerに渡す値
+        context = {}
+        robot_name = self.kwargs["robot_name"]
+        motion_name = self.kwargs["motion_name"]
+
+        user = self.request.user
+        #user = get_user_model()
+        #user = user.objects.get(username="test")
+
+        if user.robots.filter(robot_name=robot_name).exists():
+            # robotが存在したとき
+            context["robot"] = user.robots.get(robot_name=self.kwargs["robot_name"])
+
+            if context["robot"].motions.filter(motion_name=motion_name).exists():
+                # motionが存在したとき
+                context["motion"] = context["robot"].motions.get(motion_name=motion_name)
+            else:
+                # motionが存在しないとき
+                context["motion"] = False
+        else:
+            # robotが存在しないとき
+            context["robot"] = False
+
+        return context
+
+
+
+
+
+
+

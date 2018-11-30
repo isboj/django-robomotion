@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% block title %}Index{% endblock %}
+
+{% block main %}
+
+<div class="page-header header-filter clear-filter purple-filter header-small" data-parallax="true" style="background-image: url('./assets/img/bg2.jpg');">
+    <div class="container">
+        {% include 'message.html' %}
+        <div class="row">
+            <div class="col-md-8 ml-auto mr-auto">
+                <div class="brand">
+                    <h1>{{ value.motion.motion_name }}のフレーム</h1>
+                    <h3>value(フレーム)の確認</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main-raised main">
+  <div class="section">
+    <div class="container">
+      <div class="row">
+          <div id="joints3d">{{ value.data }}</div>
+          <div class="col-md-10" id="pose"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+{# TODO: vnectのデータでない場合はグラフ描画できないことの対策が必要 #}
+<!-- Plotly.js -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+var joints3d = document.getElementById('joints3d').textContent;
+joints3d = JSON.parse(joints3d);
+//console.log(joints3d);
+var limb_parents = [1, 15, 1, 2, 3, 1, 5, 6, 14, 8, 9, 14, 11, 12, 14, 14, 1, 4, 7, 10, 13];
+var data = [];
+
+for(var i=0; i<joints3d.length; i++){
+    var line = {};
+    line["mode"] = "lines";
+    line["name"] = i;
+    line["type"] = "scatter3d";
+
+    var xPair = [joints3d[i][0], joints3d[limb_parents[i]][0]];
+    var yPair = [joints3d[i][1], joints3d[limb_parents[i]][1]];
+    var zPair = [joints3d[i][2], joints3d[limb_parents[i]][2]];
+    line["x"] = xPair;
+    line["y"] = yPair;
+    line["z"] = zPair;
+
+    data.push(line)
+}
+//console.log(data);
+var layout = {
+  /*"autosize": true,*/
+  "scene": {
+    "xaxis": {
+      "title": "X"
+    },
+    "yaxis": {
+      "title": "Y"
+    },
+    "zaxis": {
+      "title": "Z"
+    }
+  },
+  "title": "3d joint",
+    autosize: false, width:1000, height:1000
+};
+Plotly.newPlot('pose', data, layout, {displayModeBar: true});
+
+</script>
+{% endblock %}
