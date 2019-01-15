@@ -86,3 +86,5 @@ class ValueSetSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Robot does not exist.")
         elif motion is False:
             raise serializers.ValidationError("Motion does not exist.")
+
+        return attrs
