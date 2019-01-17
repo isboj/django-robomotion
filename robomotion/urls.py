@@ -20,7 +20,7 @@ from django.conf.urls import url
 from robocms.views import home
 
 urlpatterns = [
-    #path('', index),  # 最初のページ
+    path('', home, name="top"),  # 最初のページ
     path('robocms/', include(('robocms.urls', 'robocms'), )),
     path('api_v0/', include(('api_v0.urls', 'api_v0'), )),
     # ログイン関連ビュー
@@ -28,5 +28,4 @@ urlpatterns = [
     # auth api by jwt
     path('auth_api/', include('auth_api.urls')),
     path('admin/', admin.site.urls),
-
 ]
