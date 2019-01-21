@@ -25,7 +25,17 @@ class Robot(models.Model):
     robot_name = models.CharField(max_length=100)
     robot_category = models.CharField(max_length=100)
     is_public = models.BooleanField(default=False)  # robotの共有可否
-    share_key = models.CharField(max_length=10, default=random_key(10))  # 共有用key
+    share_key = models.CharField(max_length=10, default=random_key(10), blank=False)  # 共有用key
+
+    def save(self, *args, **kwargs):
+
+        if self.id is None:
+            # 新規作成のとき
+
+            # TODO: share_keyが重複する可能性の考慮が必要
+            self.share_key = random_key(10)  # なぜか、defaultでshare_keyが設定できないことがあるため
+
+        super(Robot, self).save(*args, **kwargs)
 
     def __repr__(self):
         # 主キーとnameを返して見やすくする
